@@ -17,7 +17,7 @@ Our workflow consisted of the following core steps:
 ## Future directions
 
 ### Data types
-In the future we hope to integrate additional omics data modalities available through the Kids First Data Resrouce-such as somatic mutation calls from tumor sequencing, HPO phenotypes and patient clinical characteristics-and additional disease states like the [INCLUDE](https://www.nih.gov/include-project) project focused on Down Syndrome.
+In the future we hope to integrate additional omics data modalities available through the Kids First Data Resource-such as somatic mutation calls from tumor sequencing, HPO phenotypes and patient clinical characteristics-and additional disease states like the [INCLUDE](https://www.nih.gov/include-project) project focused on Down Syndrome.
 
 ### Methodology
 In the future we would like to explore the use of feature selection methods, such as recursive feature elimination, to reduce the number of genes required to make cluster predictions. We would then iterate on the clustering process to see if pvclust performs better on the reduced feature set. 
