@@ -1,4 +1,4 @@
-# Iterative custer analysis using multi-omics modalities
+# Iterative cluster analysis using multi-omics modalities and interpretation with the data translator
 
 This repository contains the source code and results of the iterative clustering of multiomics data and interpretation with the Biomedical Data Translator project. This project began at the 2022 Bio-IT FAIR Data Hackathon. We use the [Gabriella Miller Kids First Data Resource Center](https://kidsfirstdrc.org/) data supported by the NIH Common Fund--this resource contains data from over 11,000 samples, including DNA and RNA as well as clinical information. 
 
