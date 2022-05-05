@@ -17,6 +17,27 @@ install.packages("pvclust")
 
 library(parallel)
 library (pvclust)
+library(tidyverse)
+tumor_gene_expression_file<- "/sbgenomics/project-files/tumor-gene-expression-rsem-tpm-collapsed.tsv"
+
+tumor_gene_expression <- read_table(tumor_gene_expression_file)
+tumor_gene_expression[1:4,1:4]
+dim(tumor_gene_expression)
+
+tge <- column_to_rownames(tumor_gene_expression,var="gene_id")
+tge[1:4,1:4]
+dim(tge)
+typeof(tge)
+
+gcm <- t(tge)
+gcm[1:4,1:4]
+dim(gcm)
+typeof(gcm)
+is.matrix(gcm)
+
+ttge <- t(tge)
+typeof(ttge)
+is.matrix(ttge)
 
 tumor_gene_expression_file<- "/sbgenomics/project-files/tumor-gene-expression-rsem-tpm-collapsed.tsv"
 
