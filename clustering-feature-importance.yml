@@ -1,0 +1,47 @@
+name: cluster-feature-importance
+channels:
+  - conda-forge
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - _py-xgboost-mutex=2.0=cpu_0
+  - bzip2=1.0.8=h7f98852_4
+  - ca-certificates=2021.10.8=ha878542_0
+  - gh=2.9.0=ha8f183a_0
+  - joblib=1.1.0=pyhd8ed1ab_0
+  - ld_impl_linux-64=2.36.1=hea4e1c9_2
+  - libblas=3.9.0=14_linux64_openblas
+  - libcblas=3.9.0=14_linux64_openblas
+  - libffi=3.4.2=h7f98852_5
+  - libgcc-ng=11.2.0=h1d223b6_16
+  - libgfortran-ng=11.2.0=h69a702a_16
+  - libgfortran5=11.2.0=h5c6108e_16
+  - libgomp=11.2.0=h1d223b6_16
+  - liblapack=3.9.0=14_linux64_openblas
+  - libnsl=2.0.0=h7f98852_0
+  - libopenblas=0.3.20=pthreads_h78a6416_0
+  - libstdcxx-ng=11.2.0=he4da1e4_16
+  - libuuid=2.32.1=h7f98852_1000
+  - libxgboost=1.5.1=cpu_h3d145d1_2
+  - libzlib=1.2.11=h166bdaf_1014
+  - ncurses=6.3=h27087fc_1
+  - openssl=3.0.3=h166bdaf_0
+  - pip=22.0.4=pyhd8ed1ab_0
+  - py-xgboost=1.5.1=cpu_py310hd1aba9c_2
+  - python=3.10.4=h2660328_0_cpython
+  - python_abi=3.10=2_cp310
+  - readline=8.1=h46c0cb4_0
+  - sqlite=3.38.3=h4ff8645_0
+  - threadpoolctl=3.1.0=pyh8a188c0_0
+  - tk=8.6.12=h27826a3_0
+  - tzdata=2022a=h191b570_0
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.5=h516909a_1
+  - zlib=1.2.11=h166bdaf_1014
+  - pip:
+    - numpy==1.22.3
+    - scikit-learn==1.0.2
+    - scipy==1.8.0
+    - setuptools==62.1.0
+    - xgboost==1.5.1
+prefix: /opt/conda/envs/cluster-feature-importance
