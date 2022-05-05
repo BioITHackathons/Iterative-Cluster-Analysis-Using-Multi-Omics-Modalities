@@ -39,25 +39,6 @@ ttge <- t(tge)
 typeof(ttge)
 is.matrix(ttge)
 
-tumor_gene_expression_file<- "/sbgenomics/project-files/tumor-gene-expression-rsem-tpm-collapsed.tsv"
-
-tumor_gene_expression <- read.table(tumor_gene_expression_file, header=TRUE, row.names=1, sep="\t")
-
-head (tumor_gene_expression)
-
-
-dim(tumor_gene_expression)
-
-patient_cluster_matrix <- t(tumor_gene_expression)
-
-patient_cluster_matrix[1:4,1:4]
-
-reduced_pcm <- patient_cluster_matrix[1:100, 1:100]
-
-head(reduced_pcm)
-
-reduced_pcm_t <- t(reduced_pcm)
-
 numCores <-detectCores()
 numCores
 
@@ -72,20 +53,15 @@ cl <- makeCluster(10)
 # It is available for back compatibility but will be unavailable in the future.”
 # -
 
-pcm_t.pv <- parPvclust(cl, reduced_pcm_t, method.hclust="average",
-           method.dist="correlation", use.cor="pairwise.complete.obs",
-           nboot=1000, r=seq(.5,1.4,by=.1), store=FALSE, weight=FALSE,
-           init.rand=NULL, iseed=NULL, quiet=FALSE)
+ttge_t.pv <- parPvclust(cl, ttge, method.hclust="ward.D2",
+           method.dist="minkowski", use.cor="pairwise.complete.obs",
+           nboot=10, r=seq(.5,1.4,by=.1))
 
-p <-plot(reduced_pcm_t.pv)
+plot(ttge_t.pv)
 
-x <- seplot(reduced_pcm_t.pv, identify=TRUE)
+pvrect(ttge_t.pv)
 
-pvrect(p)
-
-reduced_pcm_t.pv$labels
-
-pick <- pvpick(reduced_pcm_t.pv, alpha=0.60, pv="au", type="geq", max.only=TRUE)
+pick <- pvpick(ttge.pv, alpha=0.80, pv="au", type="geq", max.only=TRUE)
 
 cluster_assignments <- do.call('rbind',lapply(1:length(pick$clusters),function(i){
     cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])
