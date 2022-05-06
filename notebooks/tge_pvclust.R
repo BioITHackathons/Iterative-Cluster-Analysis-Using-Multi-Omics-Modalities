@@ -12,7 +12,6 @@
 #     language: R
 #     name: ir
 # ---
-
 install.packages("pvclust")
 
 library(parallel)
@@ -39,39 +38,55 @@ ttge <- t(tge)
 typeof(ttge)
 is.matrix(ttge)
 
-numCores <-detectCores()
-numCores
 
 # +
 # makeCluster is not allowing more than 10 cores to be made
 # -
 
-cl <- makeCluster(10)
+cl <- makeCluster(30)
 
 # +
-#"parPvclust" has been integrated into pvclust (with "parallel" option).
-# It is available for back compatibility but will be unavailable in the future.”
+# run the clustering by gene with the gcm matrix
 # -
+gcm.pv <- parPvclust(cl, gcm, method.hclust="ward.D2",
+                        method.dist="minkowski", use.cor="pairwise.complete.obs",
+                        nboot=1000, r=seq(.5,1.4,by=.1))
 
-ttge_t.pv <- parPvclust(cl, ttge, method.hclust="ward.D2",
+
+# plot a 6x3 inches cluster dendogram and draw the au=95%
+pdf("/sbgenomics/output-files/cluster_by_gene_plot.pdf", width=6, height=3)
+plot(gcm.pv)
+pvrect(gcm.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
+dev.off()
+
+pick <- pvpick(gcm.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
+
+cluster_assignments <- do.call('rbind',lapply(1:length(pick$clusters),function(i){
+  cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])
+}))
+colnames(cluster_assignments) <- c("cluster","gene")
+
+write.csv(cluster_assignments, "/sbgenomics/output-files/cluster_by_gene_assignments.csv",row.names=FALSE)
+
+
+ttge.pv <- parPvclust(cl, ttge, method.hclust="ward.D2",
            method.dist="minkowski", use.cor="pairwise.complete.obs",
-           nboot=10, r=seq(.5,1.4,by=.1))
+           nboot=1000, r=seq(.5,1.4,by=.1))
 
-plot(ttge_t.pv)
 
-pvrect(ttge_t.pv)
+# 6x3 inches
+pdf("/sbgenomics/output-files/cluster_by_tissue_plot.pdf", width=6, height=3)
+plot(ttge.pv)
+pvrect(ttge.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
+dev.off()
 
-pick <- pvpick(ttge.pv, alpha=0.80, pv="au", type="geq", max.only=TRUE)
-
+pick <- pvpick(ttge.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
 cluster_assignments <- do.call('rbind',lapply(1:length(pick$clusters),function(i){
     cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])
 }))
 colnames(cluster_assignments) <- c("cluster","biospecimen")
 
-cluster_assignments
+write.csv(cluster_assignments, "/sbgenomics/output-files/cluster_by_tissue_assignments.csv",row.names=FALSE)
 
-
-
-write.csv(cluster_assignments, "cluster_assignments.csv",row.names=FALSE)
 
 
