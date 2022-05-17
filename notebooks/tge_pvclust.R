@@ -19,10 +19,14 @@ library(parallel)
 library (pvclust)
 library(tidyverse)
 
-setwd ("/Users/deslattesmaysa2/projects/Iterative-Cluster-Analysis-Using-Multi-Omics-Modalities/data")
-getwd()
-
-tumor_gene_expression_file<- "tumor-gene-expression-rsem-tpm-collapsed.tsv"
+current_dir     <- getwd()
+current_dir
+clone_data_dir  <- "Iterative-Cluster-Analysis-Using-Multi-Omics-Modalities/data"
+clone_data_dir
+tge_file        <- "tumor-gene-expression-rsem-tpm-collapsed.tsv"
+tge_file
+tge_with_dir    <- paste(paste(current_dir, clone_data_dir,sep="/"),tge_file, sep="/")
+tge_with_dir
 
 tumor_gene_expression <- read_table(tumor_gene_expression_file)
 tumor_gene_expression[1:4,1:4]
@@ -34,15 +38,17 @@ dim(tge)
 typeof(tge)
 
 gcm <- t(tge)
-gcm[1:4,1:4]
 dim(gcm)
 typeof(gcm)
 is.matrix(gcm)
 
 ttge <- t(tge)
-typeof(ttge)
-is.matrix(ttge)
+tge <- t(ttge)
+typeof(tge)
+is.matrix(tge)
 
+gcm[1:4,1:4]
+tge[1:4,1:4]
 
 # +
 # makeCluster is not allowing more than 10 cores to be made
@@ -50,49 +56,46 @@ is.matrix(ttge)
 
 cl <- makeCluster(detectCores()-2)
 cl
-# +
-# run the clustering by gene with the gcm matrix
-# -
-tinygcm<-gcm[1:1000,1:1000]
-tinygcm.pv <- parPvclust(cl, tinygcm, method.hclust="ward.D2",
-                        method.dist="minkowski", use.cor="pairwise.complete.obs",
-                        nboot=10, r=seq(.5,1.4,by=.1))
+tinytge<- tge[1:1000,1:1000]
 
-
-# plot a 6x3 inches cluster dendogram and draw the au=95%
-pdf("/sbgenomics/output-files/cluster_by_gene_plot.pdf", width=6, height=3)
-plot(gcm.pv)
-pvrect(gcm.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
-dev.off()
-
-pick <- pvpick(gcm.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
-
-cluster_assignments <- do.call('rbind',lapply(1:length(pick$clusters),function(i){
-  cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])
-}))
-colnames(cluster_assignments) <- c("cluster","gene")
-
-write.csv(cluster_assignments, "/sbgenomics/output-files/cluster_by_gene_assignments.csv",row.names=FALSE)
-
-
-ttge.pv <- parPvclust(cl, ttge, method.hclust="ward.D2",
+tinytge.pv <- parPvclust(cl, tinytge, method.hclust="ward.D2",
            method.dist="minkowski", use.cor="pairwise.complete.obs",
-           nboot=1000, r=seq(.5,1.4,by=.1))
+           nboot=10, r=seq(.5,1.4,by=.1))
+plot(tinytge.pv)
+pvrect(tinytge.pv)
+
+pick <- pvpick(tinytge.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
 
 
-# 6x3 inches
-pdf("/sbgenomics/output-files/cluster_by_tissue_plot.pdf", width=6, height=3)
-plot(ttge.pv)
-pvrect(ttge.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
-dev.off()
-
-pick <- pvpick(ttge.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
 cluster_assignments <- do.call('rbind',lapply(1:length(pick$clusters),function(i){
-    cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])
-}))
-colnames(cluster_assignments) <- c("cluster","biospecimen")
+  cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])}))
+colnames(cluster_assignments) <- c("cluster","gene")
+#
 
-write.csv(cluster_assignments, "/sbgenomics/output-files/cluster_by_tissue_assignments.csv",row.names=FALSE)
+output_dir      <- "/sbgenomics/output-files"
+output_dir
+outfilename <- "tiny_tissue_by_gene_experiment_cluster.csv"
+output_dir_file <- paste(output_dir, outfilename, sep="/")
+output_dir_file
+
+write.csv(cluster_assignments, output_dir_file,row.names=FALSE)
+
+tgenboot10.pv <- parPvclust(cl, tge, method.hclust="ward.D2",
+                         method.dist="minkowski", use.cor="pairwise.complete.obs",
+                         nboot=10, r=seq(.5,1.4,by=.1))
+
+pick <- pvpick(tgenboot10.pv, alpha=0.95, pv="au", type="geq", max.only=TRUE)
 
 
+cluster_assignments <- do.call('rbind',lapply(1:length(pick$clusters),function(i){
+  cbind(rep(i,length(pick$clusters[[i]])),pick$clusters[[i]])}))
+colnames(cluster_assignments) <- c("cluster","gene")
+#
 
+output_dir      <- "/sbgenomics/output-files"
+output_dir
+outfilename <- "tge_nboot10_tissue_by_gene_experiment_cluster.csv"
+output_dir_file <- paste(output_dir, outfilename, sep="/")
+output_dir_file
+
+write.csv(cluster_assignments, output_dir_file,row.names=FALSE)install.packages("pvclust")
