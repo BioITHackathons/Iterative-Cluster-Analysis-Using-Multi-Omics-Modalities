@@ -13,11 +13,16 @@
 #     name: ir
 # ---
 install.packages("pvclust")
+install.packages("tidyverse")
 
 library(parallel)
 library (pvclust)
 library(tidyverse)
-tumor_gene_expression_file<- "/sbgenomics/project-files/tumor-gene-expression-rsem-tpm-collapsed.tsv"
+
+setwd ("/Users/deslattesmaysa2/projects/Iterative-Cluster-Analysis-Using-Multi-Omics-Modalities/data")
+getwd()
+
+tumor_gene_expression_file<- "tumor-gene-expression-rsem-tpm-collapsed.tsv"
 
 tumor_gene_expression <- read_table(tumor_gene_expression_file)
 tumor_gene_expression[1:4,1:4]
@@ -43,14 +48,15 @@ is.matrix(ttge)
 # makeCluster is not allowing more than 10 cores to be made
 # -
 
-cl <- makeCluster(30)
-
+cl <- makeCluster(detectCores()-2)
+cl
 # +
 # run the clustering by gene with the gcm matrix
 # -
-gcm.pv <- parPvclust(cl, gcm, method.hclust="ward.D2",
+tinygcm<-gcm[1:1000,1:1000]
+tinygcm.pv <- parPvclust(cl, tinygcm, method.hclust="ward.D2",
                         method.dist="minkowski", use.cor="pairwise.complete.obs",
-                        nboot=1000, r=seq(.5,1.4,by=.1))
+                        nboot=10, r=seq(.5,1.4,by=.1))
 
 
 # plot a 6x3 inches cluster dendogram and draw the au=95%
